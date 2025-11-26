@@ -357,8 +357,194 @@ export default function Home() {
               </Card>
             )}
           </TabsContent>
-        </Tabs>
-      </div>
+        </Tabs> 
+
+
+import React from 'react';
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
+
+const movieGenres = [
+  "Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Romance", 
+  "Thriller", "Animation", "Documentary", "Fantasy", "Adventure", "Mystery"
+];
+
+const musicGenres = [
+  "Pop", "Rock", "Hip-Hop", "R&B", "Jazz", "Classical", 
+  "Electronic", "Country", "Indie", "Metal", "Folk", "Latin"
+];
+
+export default function GenreSelector({ type, selectedGenres, onToggle }) {
+  const genres = type === 'movie' ? movieGenres : musicGenres;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {genres.map((genre) => {
+        const isSelected = selectedGenres.includes(genre);
+        return (
+          <Badge
+            key={genre}
+            variant={isSelected ? "default" : "outline"}
+            className={`cursor-pointer px-3 py-1.5 text-sm transition-all ${
+              isSelected 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
+                : 'hover:bg-gray-100'
+            }`}
+            onClick={() => onToggle(genre)}
+          >
+            {isSelected && <Check className="w-3 h-3 mr-1" />}
+            {genre}
+          </Badge>
+        );
+      })}
     </div>
   );
+}
+
+
+
+
+
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Heart, Star, Play, Film, Music } from "lucide-react";
+
+export default function RecommendationCard({ item, onSave, onRate }) {
+  const isMovie = item.recommendation_type === 'movie';
+
+  return (
+    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
+      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+        {item.image_url ? (
+          <img 
+            src={item.image_url} 
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            {isMovie ? (
+              <Film className="w-16 h-16 text-gray-600" />
+            ) : (
+              <Music className="w-16 h-16 text-gray-600" />
+            )}
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        <Badge 
+          className={`absolute top-3 left-3 ${
+            isMovie 
+              ? 'bg-blue-600' 
+              : 'bg-pink-600'
+          }`}
+        >
+          {isMovie ? <Film className="w-3 h-3 mr-1" /> : <Music className="w-3 h-3 mr-1" />}
+          {isMovie ? 'Movie' : 'Music'}
+        </Badge>
+        <Button
+ 
+
+      
+      </div>
+    </div>
+
+
+		import React, { useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, X } from "lucide-react";
+
+export default function FavoritesInput({ type, favorites, onAdd, onRemove, placeholder }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleAdd = () => {
+    if (inputValue.trim() && !favorites.includes(inputValue.trim())) {
+      onAdd(inputValue.trim());
+      setInputValue('');
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder={placeholder}
+          className="flex-1"
+        />
+        <Button onClick={handleAdd} size="icon" variant="outline">
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+      {favorites.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {favorites.map((item, index) => (
+            <Badge 
+              key={index} 
+              variant="secondary"
+              className="px-3 py-1.5 flex items-center gap-1"
+            >
+              {item}
+              <X 
+                className="w-3 h-3 cursor-pointer hover:text-red-500" 
+                onClick={() => onRemove(item)}
+              />
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+  );
+}
+{
+  "name": "UserPreference",
+  "type": "object",
+  "properties": {
+    "preference_type": {
+      "type": "string",
+      "enum": [
+        "movie",
+        "music"
+      ],
+      "description": "Type of preference"
+    },
+    "genres": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Preferred genres"
+    },
+    "favorite_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Favorite movies or artists"
+    },
+    "disliked_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Disliked movies or artists"
+    }
+  },
+  "required": [
+    "preference_type"
+  ]
 }
